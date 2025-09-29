@@ -61,7 +61,7 @@ POST http://localhost:7007/api/v1/hotel/1/rooms
 Content-Type: application/json
 
 {
-"roomNumber": 3,
+"roomNumber": 4,
 "price": 2500
 }
 ###
@@ -72,6 +72,6 @@ Content-Type: application/json
 ###
 
 ### Delete hotel
-DELETE http://localhost:7007/api/v1/hotel/2
+DELETE http://localhost:7007/api/v1/hotel/1
 ###
 

@@ -1,32 +1,25 @@
 package app.entities;
 
-import app.DTOs.RoomDTO;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 @Builder
 public class Room {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "hotel_id") // FK column in DB
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "hotel_id")
     private Hotel hotel;
 
     private int roomNumber;
     private int price;
-
-    public Room(RoomDTO roomDTO, Hotel hotel){
-        this.id = roomDTO.getId();
-        this.hotel = hotel;
-        this.roomNumber = roomDTO.getRoomNumber();
-        this.price = roomDTO.getPrice();
-    }
 }
-

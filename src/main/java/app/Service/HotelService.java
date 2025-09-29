@@ -5,6 +5,8 @@ import app.DTOs.HotelDTO;
 import app.DTOs.RoomDTO;
 import app.entities.Hotel;
 import app.entities.Room;
+import app.mappers.HotelMapper;
+import app.mappers.RoomMapper;
 import io.javalin.http.Context;
 import jakarta.persistence.EntityManagerFactory;
 
@@ -18,73 +20,60 @@ public class HotelService {
     }
 
     public List<HotelDTO> getAllHotels() {
-        List<Hotel> hotels = hotelDAO.getAllHotels();
-
-        // Access rooms to ensure they are initialized
-        hotels.forEach(h -> h.getRooms().size());
-
-        // Convert entities to DTOs
-        return hotels.stream()
-                .map(HotelDTO::new)
+        return hotelDAO.getAllHotels().stream()
+                .map(HotelMapper::toDTO)
                 .toList();
     }
 
-    public HotelDTO createHotel(HotelDTO newHotel){
-        Hotel hotel = new Hotel(newHotel);
-        Hotel createdHotel = hotelDAO.createHotel(hotel);
-        return new HotelDTO(createdHotel);
-    }
     public HotelDTO getHotelById(int hotelId) {
-        Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if (hotel == null) {
-            return null; // not found
-        }
-        return new HotelDTO(hotel); // rooms are already initialized
-    }
-    public HotelDTO updateHotel(HotelDTO updateHotel){
-        Hotel hotel = new Hotel(updateHotel);
-        Hotel updatedHotel = hotelDAO.updateHotel(hotel);
-        return new HotelDTO(updatedHotel);
+        return HotelMapper.toDTO(hotelDAO.getHotelById(hotelId));
     }
 
-    public boolean deleteHotel(int hotelId){
-        Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if(hotel != null){
-            hotelDAO.deleteHotel(hotelId);
+    public HotelDTO createHotel(HotelDTO dto) {
+        Hotel hotel = HotelMapper.toEntity(dto);
+        return HotelMapper.toDTO(hotelDAO.createHotel(hotel));
+    }
+
+    public HotelDTO updateHotel(HotelDTO dto) {
+        Hotel hotel = HotelMapper.toEntity(dto);
+        return HotelMapper.toDTO(hotelDAO.updateHotel(hotel));
+    }
+
+    public boolean deleteHotel(int id) {
+        Hotel hotel = hotelDAO.getHotelById(id);
+        if (hotel != null) {
+            hotelDAO.deleteHotel(id);
             return true;
         }
         return false;
     }
-    public HotelDTO addRoom(int hotelId, RoomDTO roomDTO){
+
+    public HotelDTO addRoom(int hotelId, RoomDTO roomDTO) {
         Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if(hotel == null){
-            return null;
-        }
-        Room room = new Room(roomDTO,hotel);
-        hotel = hotelDAO.addRoom(hotel, room);
-        return new HotelDTO(hotel);
+        if (hotel == null) return null;
+        Room room = RoomMapper.toEntity(roomDTO, hotel);
+        return HotelMapper.toDTO(hotelDAO.addRoom(hotel, room));
     }
-    public HotelDTO removeRoom(int hotelId, int roomId){
+
+    public HotelDTO removeRoom(int hotelId, int roomId) {
         Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if(hotel == null){
-            return null;
-        }
+        if (hotel == null) return null;
         Room room = hotel.getRooms().stream()
                 .filter(r -> r.getId().equals(roomId))
                 .findFirst()
                 .orElse(null);
-        if(room == null){
-            return new HotelDTO(hotel);
-        }
-        hotel = hotelDAO.removeRoom(hotel, room);
-        return new HotelDTO(hotel);
+        if (room == null) return HotelMapper.toDTO(hotel);
+        return HotelMapper.toDTO(hotelDAO.removeRoom(hotel, room));
     }
-    public List<RoomDTO> getRoomsForHotel(int hotelId){
+
+    public List<RoomDTO> getRoomsForHotel(int hotelId) {
         Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if(hotel == null){
-            return List.of();
+        if (hotel == null){
+            throw new IllegalArgumentException("Hotel id " + hotelId + " does not exist");
         }
-        List<Room> rooms = hotelDAO.getRoomsForHotel(hotel);
-        return RoomDTO.toDTOList(rooms);
+        return hotelDAO.getRoomsForHotel(hotel).stream()
+                .map(RoomMapper::toDTO)
+                .toList();
     }
 }
+

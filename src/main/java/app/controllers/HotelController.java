@@ -12,26 +12,30 @@ import jakarta.persistence.EntityManagerFactory;
 import java.util.List;
 
 public class HotelController {
-    private final EntityManagerFactory emf = HibernateConfig.getEntityManagerFactory("hotel");
-    private final HotelService hotelService = new HotelService(emf);
+    private final HotelService hotelService;
 
-    public void getAllHotels(Context ctx){
-        List<HotelDTO> hotels = hotelService.getAllHotels();
-        ctx.json(hotels);
+    public HotelController(EntityManagerFactory emf) {
+        this.hotelService = new HotelService(emf);
     }
-    public void createHotel(Context ctx){
+
+    public void getAllHotels(Context ctx) {
+        ctx.json(hotelService.getAllHotels());
+    }
+
+    public void createHotel(Context ctx) {
         HotelDTO newHotel = ctx.bodyValidator(HotelDTO.class).get();
         HotelDTO created = hotelService.createHotel(newHotel);
         if (created != null) {
             ctx.json(created);
-        }else  {
-            throw new IllegalStateException("Incorrect JSON representation");
+            ctx.json("hotel created");
+        } else {
+            ctx.status(400).result("Invalid hotel data");
         }
     }
+
     public void getHotelById(Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).get();
         HotelDTO hotel = hotelService.getHotelById(id);
-
         if (hotel != null) {
             ctx.json(hotel);
         } else {
@@ -39,39 +43,37 @@ public class HotelController {
         }
     }
 
-    public void deleteHotel(Context ctx){
+    public void deleteHotel(Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).get();
-        boolean deleted = hotelService.deleteHotel(id);
-        ctx.json(deleted);
+        ctx.json(hotelService.deleteHotel(id));
     }
-    public void updateHotel(Context ctx){
+
+    public void updateHotel(Context ctx) {
         int id = ctx.pathParamAsClass("id", Integer.class).get();
-        HotelDTO updatedHotel = ctx.bodyAsClass(HotelDTO.class);
-        updatedHotel.setId(id);
-        HotelDTO updated = hotelService.updateHotel(updatedHotel);
-        ctx.json(updated);
+        HotelDTO dto = ctx.bodyAsClass(HotelDTO.class);
+        dto.setId(id);
+        ctx.json(hotelService.updateHotel(dto));
     }
+
     public void addRoom(Context ctx) {
         int hotelId = ctx.pathParamAsClass("id", Integer.class).get();
         RoomDTO roomDTO = ctx.bodyAsClass(RoomDTO.class);
-
-        HotelDTO updatedHotel = hotelService.addRoom(hotelId, roomDTO);
-        ctx.json(updatedHotel);
+        ctx.json(hotelService.addRoom(hotelId, roomDTO));
     }
 
     public void removeRoom(Context ctx) {
         int hotelId = ctx.pathParamAsClass("id", Integer.class).get();
         int roomId = ctx.pathParamAsClass("roomId", Integer.class).get();
-
-        HotelDTO updatedHotel = hotelService.removeRoom(hotelId, roomId);
-        ctx.json(updatedHotel);
+        ctx.json(hotelService.removeRoom(hotelId, roomId));
     }
 
     public void getRoomsForHotel(Context ctx) {
         int hotelId = ctx.pathParamAsClass("id", Integer.class).get();
-        List<RoomDTO> rooms = hotelService.getRoomsForHotel(hotelId);
-        ctx.json(rooms);
+        try {
+            List<RoomDTO> rooms = hotelService.getRoomsForHotel(hotelId);
+            ctx.json(rooms);
+        } catch (IllegalArgumentException e) {
+            ctx.status(400).result(e.getMessage());
+        }
     }
-
-
 }

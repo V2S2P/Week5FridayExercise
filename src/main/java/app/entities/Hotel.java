@@ -1,6 +1,6 @@
 package app.entities;
 
-import app.DTOs.HotelDTO;
+import app.entities.Room;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,18 +24,4 @@ public class Hotel {
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Room> rooms;
-
-    public Hotel(HotelDTO hotelDTO) {
-        this.id = hotelDTO.getId();
-        this.name = hotelDTO.getName();
-        this.address = hotelDTO.getAddress();
-
-        // Convert RoomDTOs -> Rooms, and set the back-reference
-        if (hotelDTO.getRooms() != null) {
-            this.rooms = hotelDTO.getRooms().stream()
-                    .map(roomDTO -> new Room(roomDTO, this)) // this hotel
-                    .toList();
-        }
-    }
 }
-
