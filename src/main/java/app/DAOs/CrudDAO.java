@@ -13,7 +13,7 @@ public interface CrudDAO{
     Hotel updateHotel(Hotel hotel);
     void deleteHotel(int Id);
 
-    Hotel addRoom(Hotel hotel, Room room);
-    Hotel removeRoom(Hotel hotel, Room room);
+    Room addRoom(Hotel hotel, Room room);
+    boolean removeRoom(Hotel hotel, Room room);
     List<Room> getRoomsForHotel(Hotel hotel);
 }

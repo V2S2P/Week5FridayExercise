@@ -61,13 +61,13 @@ POST http://localhost:7007/api/v1/hotel/1/rooms
 Content-Type: application/json
 
 {
-"roomNumber": 4,
+"roomNumber": 3,
 "price": 2500
 }
 ###
 
 ### Remove room for hotel
-DELETE http://localhost:7007/api/v1/hotel/1/rooms/3
+DELETE http://localhost:7007/api/v1/hotel/1/rooms/2
 Content-Type: application/json
 ###
 

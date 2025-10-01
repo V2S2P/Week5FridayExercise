@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -23,5 +24,11 @@ public class Hotel {
     private String address;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Room> rooms;
+    @Builder.Default
+    private List<Room> rooms = new ArrayList<>();
+
+    public void addRoom(Room room) {
+        rooms.add(room);
+        room.setHotel(this);
+    }
 }

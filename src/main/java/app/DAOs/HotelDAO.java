@@ -11,7 +11,7 @@ public class HotelDAO implements CrudDAO {
     private static HotelDAO instance;
     private static EntityManagerFactory emf;
 
-    private HotelDAO() {}
+    public HotelDAO() {}
 
     public static HotelDAO getInstance(EntityManagerFactory emf) {
         if (instance == null) {
@@ -75,6 +75,7 @@ public class HotelDAO implements CrudDAO {
             }
         }
     }
+    /*
     //Used this method to avoid LazyInitializationException
     public Hotel addRoom(Hotel hotel, Room room) {
         try (EntityManager em = emf.createEntityManager()) {
@@ -95,22 +96,20 @@ public class HotelDAO implements CrudDAO {
                     .getSingleResult();
         }
     }
-    /*@Override
-    public Hotel addRoom(Hotel hotel, Room room) {
-        try(EntityManager em = emf.createEntityManager()) {
+     */
+    public Room addRoom(Hotel hotel, Room room) {
+        try (EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
-            hotel = em.find(Hotel.class, hotel.getId());
+            hotel = em.merge(hotel);   // ensure managed
             room.setHotel(hotel);
-            hotel.getRooms().add(room);
             em.persist(room);
             em.getTransaction().commit();
-            return hotel;
+            return room;               // return the newly persisted room
         }
     }
-     */
 
     @Override
-    public Hotel removeRoom(Hotel hotel, Room room) {
+    public boolean removeRoom(Hotel hotel, Room room) {
         try(EntityManager em = emf.createEntityManager()) {
             em.getTransaction().begin();
             hotel = em.find(Hotel.class, hotel.getId());
@@ -118,9 +117,11 @@ public class HotelDAO implements CrudDAO {
             if (room != null) {
                 hotel.getRooms().remove(room);
                 em.remove(room);
+                em.getTransaction().commit();
+                return true;
             }
-            em.getTransaction().commit();
-            return hotel;
+            em.getTransaction().rollback();
+            return false;
         }
     }
 

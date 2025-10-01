@@ -48,22 +48,28 @@ public class HotelService {
         return false;
     }
 
-    public HotelDTO addRoom(int hotelId, RoomDTO roomDTO) {
+    public RoomDTO addRoom(int hotelId, RoomDTO roomDTO) {
         Hotel hotel = hotelDAO.getHotelById(hotelId);
         if (hotel == null) return null;
+
         Room room = RoomMapper.toEntity(roomDTO, hotel);
-        return HotelMapper.toDTO(hotelDAO.addRoom(hotel, room));
+        Room saved = hotelDAO.addRoom(hotel, room);
+        return RoomMapper.toDTO(saved);
     }
 
-    public HotelDTO removeRoom(int hotelId, int roomId) {
+    public boolean removeRoom(int hotelId, int roomId) {
         Hotel hotel = hotelDAO.getHotelById(hotelId);
-        if (hotel == null) return null;
+        if (hotel == null) return false;
+
         Room room = hotel.getRooms().stream()
                 .filter(r -> r.getId().equals(roomId))
                 .findFirst()
                 .orElse(null);
-        if (room == null) return HotelMapper.toDTO(hotel);
-        return HotelMapper.toDTO(hotelDAO.removeRoom(hotel, room));
+
+        if (room == null) return false;
+
+        hotelDAO.removeRoom(hotel, room);
+        return true;
     }
 
     public List<RoomDTO> getRoomsForHotel(int hotelId) {
