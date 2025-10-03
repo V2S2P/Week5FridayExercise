@@ -21,13 +21,20 @@
         <testcontainers.version>1.18.0</testcontainers.version>
         <hikari.version>5.1.0</hikari.version>
         <javalin.version>6.3.0</javalin.version>
+        <token.security.version>1.0.4</token.security.version>
 
         <!-- DATABASE PROJECT NAME ON SERVER  -->
-        <db.name>highscoredemo</db.name>
+        <db.name>javalindemo</db.name>
 
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -35,11 +42,21 @@
             <artifactId>slf4j-simple</artifactId>
             <version>2.0.16</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.Hartmannsolution</groupId>
+            <artifactId>TokenSecurity</artifactId>
+            <version>${token.security.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>io.javalin</groupId>
             <artifactId>javalin</artifactId>
             <version>${javalin.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
         </dependency>
 
         <dependency>
@@ -54,41 +71,31 @@
             <version>${jackson.version}</version>
         </dependency>
 
-        <!--        DATABASE-->
-        <!--        https://www.theserverside.com/blog/Coffee-Talk-Java-News-Stories-and-Opinions/The-JPA-and-Hibernate-CRUD-operations-example-->
+        <!-- DATABASE -->
         <dependency>
             <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
-        <!--        &lt;!&ndash;        https://www.postgresqltutorial.com/postgresql-getting-started/&ndash;&gt;-->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgresql.version}</version>
         </dependency>
-        <!--        TESTING       -->
-        <!--        https://www.baeldung.com/junit-5-->
+
+        <!-- TESTING -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.9.3</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <!--        https://www.baeldung.com/hamcrest-core-matchers-->
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>java-hamcrest</artifactId>
-            <version>${hamcrest.version}</version>
+            <artifactId>hamcrest</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
-        <!--        https://java.testcontainers.org/quickstart/junit_5_quickstart/-->
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
@@ -112,36 +119,21 @@
             <version>${testcontainers.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>${hikari.version}</version>
         </dependency>
-        <!--        https://www.baeldung.com/intro-to-project-lombok-->
+
+        <!-- Project Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.9.3</version> <!-- Use the latest version available -->
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.9.3</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>2.2</version> <!-- Use the latest version available -->
-            <scope>test</scope>
-        </dependency>
+
         <!-- REST Assured for API testing -->
         <dependency>
             <groupId>io.rest-assured</groupId>
@@ -149,15 +141,35 @@
             <version>5.4.0</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M7</version> <!-- Make sure to use a version that supports JUnit 5 -->
+                <version>3.2.5</version>
+            </plugin>
+
+            <!-- Add this -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.2.0</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>write-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <outputFile>${project.build.outputDirectory}/properties-from-pom.properties</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
+
+
 </project>

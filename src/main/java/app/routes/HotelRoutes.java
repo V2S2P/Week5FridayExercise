@@ -12,7 +12,7 @@ public class HotelRoutes {
 
     public HotelRoutes() {
         this.hotelController = new HotelController(
-                HibernateConfig.getEntityManagerFactory("hotel")
+                HibernateConfig.getEntityManagerFactory()
         );
     }
 
