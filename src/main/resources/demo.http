@@ -1,4 +1,4 @@
-###
+### Login
 POST http://localhost:7007/api/auth/login
 Content-Type: application/json
 
@@ -6,3 +6,16 @@ Content-Type: application/json
     "username": "user1",
     "password": "pass123"
 }
+
+### Register new user
+POST http://localhost:7007/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "newUser",
+    "password": "password123"
+}
+
+###
+GET http://localhost:7007/api/protected/admin_demo
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJcIlZhbGRlbW1hclwiIiwic3ViIjoidXNlcjEiLCJleHAiOjE3NTk1ODMwMDEsInJvbGVzIjoiVXNlciIsInVzZXJuYW1lIjoidXNlcjEifQ.dxwbnc5eas2Kcq-LAWGfGhadKQ2ZlnCwW5VLizo6I9o

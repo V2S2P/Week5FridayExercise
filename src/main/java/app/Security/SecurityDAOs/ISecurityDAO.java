@@ -10,4 +10,5 @@ public interface ISecurityDAO {
     User createUser(String username, String password); // used for register
     Role createRole(String roleName);
     User addUserRole(String username, String role) throws EntityNotFoundException;
+    User getUserByUsername(String username) throws EntityNotFoundException;
 }

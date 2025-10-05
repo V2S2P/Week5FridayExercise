@@ -17,6 +17,7 @@ public class SecurityRoute {
         return () -> {
             path("/auth", () -> {
                 post("/login",securityController.login());
+                post("/register",securityController.register());
             });
         };
     }
